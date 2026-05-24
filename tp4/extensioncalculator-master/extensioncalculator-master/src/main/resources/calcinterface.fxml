@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.input.*?>
+<?import javafx.scene.canvas.*?>
+<?import javafx.scene.control.*?>
+<?import java.lang.*?>
+<?import javafx.scene.layout.*?>
+
+<BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="499.0" prefWidth="742.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controller.MainController">
+   <top>
+      <MenuBar fx:id="menuBar" BorderPane.alignment="CENTER">
+        <menus>
+            <Menu mnemonicParsing="false" text="File">
+              <items>
+                <MenuItem mnemonicParsing="false" onAction="#loadFile" text="Load..." />
+              </items>
+            </Menu>
+          <Menu mnemonicParsing="false" text="Theory">
+            <items>
+                  <MenuItem mnemonicParsing="false" onAction="#recalculate" text="Recalculate Extensions">
+                     <accelerator>
+                        <KeyCodeCombination alt="UP" code="R" control="UP" meta="DOWN" shift="UP" shortcut="UP" />
+                     </accelerator></MenuItem>
+                  <SeparatorMenuItem mnemonicParsing="false" />
+                  <MenuItem mnemonicParsing="false" onAction="#clear" text="Clear">
+                     <accelerator>
+                        <KeyCodeCombination alt="UP" code="C" control="UP" meta="DOWN" shift="UP" shortcut="UP" />
+                     </accelerator></MenuItem>
+                  <SeparatorMenuItem mnemonicParsing="false" />
+              <MenuItem mnemonicParsing="false" onAction="#addAxiom" text="Add Axiom">
+                     <accelerator>
+                        <KeyCodeCombination alt="UP" code="A" control="UP" meta="DOWN" shift="UP" shortcut="UP" />
+                     </accelerator></MenuItem>
+                  <MenuItem mnemonicParsing="false" onAction="#removeAxiom" text="Remove Axiom">
+                     <accelerator>
+                        <KeyCodeCombination alt="UP" code="A" control="UP" meta="DOWN" shift="DOWN" shortcut="UP" />
+                     </accelerator></MenuItem>
+                  <SeparatorMenuItem mnemonicParsing="false" />
+                  <MenuItem mnemonicParsing="false" onAction="#addDefault" text="Add Default">
+                     <accelerator>
+                        <KeyCodeCombination alt="UP" code="D" control="UP" meta="DOWN" shift="UP" shortcut="UP" />
+                     </accelerator></MenuItem>
+                  <MenuItem mnemonicParsing="false" onAction="#removeDefault" text="Remove Default">
+                     <accelerator>
+                        <KeyCodeCombination alt="UP" code="D" control="UP" meta="DOWN" shift="DOWN" shortcut="UP" />
+                     </accelerator></MenuItem>
+            </items>
+          </Menu>
+        </menus>
+      </MenuBar>
+   </top>
+   <right>
+      <VBox prefHeight="371.0" prefWidth="139.0" BorderPane.alignment="CENTER">
+         <children>
+            <Label text="Axioms" />
+            <ListView fx:id="axiomListView" />
+            <Label layoutX="10.0" layoutY="364.0" text="Defaults" />
+            <ListView fx:id="defaultListView" layoutX="10.0" layoutY="10.0" />
+         </children>
+      </VBox>
+   </right>
+   <bottom>
+      <HBox alignment="CENTER" BorderPane.alignment="CENTER" />
+   </bottom>
+   <left>
+      <TreeView fx:id="processTreeView" prefHeight="200.0" prefWidth="200.0" BorderPane.alignment="CENTER" />
+   </left>
+   <center>
+      <VBox>
+         <children>
+            <Label fx:id="detailsLabel" alignment="TOP_LEFT" prefHeight="473.0" prefWidth="406.0" wrapText="true" BorderPane.alignment="CENTER" />
+         </children>
+      </VBox>
+   </center>
+</BorderPane>

@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import java.lang.*?>
+<?import javafx.scene.layout.*?>
+
+<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="142.0" prefWidth="333.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controller.NewAxiomController">
+   <children>
+      <TextField fx:id="textField" layoutX="92.0" layoutY="44.0" onAction="#add" prefHeight="27.0" prefWidth="215.0" />
+      <Label layoutX="28.0" layoutY="49.0" text="Formula:" />
+      <Button layoutX="99.0" layoutY="101.0" mnemonicParsing="false" onAction="#add" text="Add" />
+      <Button fx:id="cancelButton" layoutX="170.0" layoutY="101.0" mnemonicParsing="false" onAction="#close" text="Cancel" />
+   </children>
+</AnchorPane>

@@ -1,0 +1,73 @@
+<?xml version="1.0"?>
+<!DOCTYPE rdf:RDF [
+    <!ENTITY xsd  "http://www.w3.org/2001/XMLSchema#" >
+    <!ENTITY rdf  "http://www.w3.org/1999/02/22-rdf-syntax-ns#" >
+    <!ENTITY rdfs "http://www.w3.org/2000/01/rdf-schema#" >
+    <!ENTITY owl  "http://www.w3.org/2002/07/owl#" >
+]>
+<rdf:RDF xmlns="http://www.example.com/vehicles#" xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#" xmlns:owl="http://www.w3.org/2002/07/owl#">
+
+    <!-- Concepts -->
+    <owl:Class rdf:about="#Vehicle">
+        <rdfs:label>Vehicle</rdfs:label>
+    </owl:Class>
+
+    <owl:Class rdf:about="#Car">
+        <rdfs:label>Car</rdfs:label>
+        <rdfs:subClassOf rdf:resource="#Vehicle"/>
+    </owl:Class>
+
+    <owl:Class rdf:about="#Sedan">
+        <rdfs:label>Sedan</rdfs:label>
+        <rdfs:subClassOf rdf:resource="#Car"/>
+    </owl:Class>
+
+    <owl:Class rdf:about="#SUV">
+        <rdfs:label>SUV</rdfs:label>
+        <rdfs:subClassOf rdf:resource="#Car"/>
+    </owl:Class>
+
+    <!-- Roles -->
+    <owl:DatatypeProperty rdf:about="#Electric">
+        <rdfs:label>Electric</rdfs:label>
+        <rdfs:range rdf:resource="&xsd;boolean"/>
+    </owl:DatatypeProperty>
+
+    <owl:ObjectProperty rdf:about="#Manufacturer">
+        <rdfs:label>Manufacturer</rdfs:label>
+        <rdfs:range rdf:resource="#VehicleManufacturer"/>
+        <rdfs:domain rdf:resource="#Vehicle"/>
+    </owl:ObjectProperty>
+
+    <owl:DatatypeProperty rdf:about="#Color">
+        <rdfs:label>Color</rdfs:label>
+        <rdfs:range rdf:resource="&xsd;string"/>
+        <rdfs:domain rdf:resource="#Vehicle"/>
+    </owl:DatatypeProperty>
+
+    <!-- Individuals -->
+    <owl:NamedIndividual rdf:about="#Tipo">
+        <rdf:type rdf:resource="#Sedan"/>
+        <Manufacturer rdf:resource="#Toyota"/>
+    </owl:NamedIndividual>
+
+    <owl:NamedIndividual rdf:about="#X6">
+        <rdf:type rdf:resource="#SUV"/>
+        <Manufacturer rdf:resource="#BMW"/>
+    </owl:NamedIndividual>
+
+    <owl:NamedIndividual rdf:about="#BMW">
+        <rdf:type rdf:resource="#VehicleManufacturer"/>
+    </owl:NamedIndividual>
+
+    <owl:NamedIndividual rdf:about="#Toyota">
+        <rdf:type rdf:resource="#VehicleManufacturer"/>
+    </owl:NamedIndividual>
+
+    <owl:NamedIndividual rdf:about="#RedSedan">
+        <rdf:type rdf:resource="#Sedan"/>
+        <Manufacturer rdf:resource="#BMW"/>
+        <Color>Red</Color>
+    </owl:NamedIndividual>
+
+</rdf:RDF>

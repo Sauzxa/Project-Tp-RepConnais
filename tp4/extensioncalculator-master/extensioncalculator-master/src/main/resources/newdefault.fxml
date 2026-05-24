@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import java.lang.*?>
+<?import java.util.*?>
+<?import javafx.scene.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="227.0" prefWidth="333.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controller.NewDefaultController">
+    <children>
+        <TextField fx:id="prereqTextField" layoutX="113.0" layoutY="44.0" onAction="#add" prefHeight="27.0" prefWidth="194.0" />
+      <TextField fx:id="justTextField" layoutX="112.0" layoutY="79.0" onAction="#add" prefHeight="27.0" prefWidth="194.0" />
+      <TextField fx:id="consTextField" layoutX="112.0" layoutY="114.0" onAction="#add" prefHeight="27.0" prefWidth="194.0" />
+        <Label layoutX="23.0" layoutY="49.0" text="Prerequisite:" />
+        <Button layoutX="101.0" layoutY="186.0" mnemonicParsing="false" onAction="#add" text="Add" />
+        <Button fx:id="cancelButton" layoutX="172.0" layoutY="186.0" mnemonicParsing="false" onAction="#close" text="Cancel" />
+      <Label layoutX="22.0" layoutY="84.0" text="Justification:" />
+      <Label layoutX="22.0" layoutY="119.0" text="Consequence:" />
+    </children>
+</AnchorPane>
