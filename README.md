@@ -1,6 +1,7 @@
 # 🧠 Représentation des Connaissances et Raisonnement (RCR) 
 
 [![Java](https://img.shields.io/badge/Java-17%2B-ED8B00?style=for-the-badge&logo=java&logoColor=white)](https://www.java.com/)
+[![Python](https://img.shields.io/badge/Python-3.8%2B-3776AB?style=for-the-badge&logo=python&logoColor=white)](https://www.python.org/)
 [![Maven](https://img.shields.io/badge/Maven-3.6%2B-C71A22?style=for-the-badge&logo=apache-maven&logoColor=white)](https://maven.apache.org/)
 [![TweetyProject](https://img.shields.io/badge/Tweety-1.23-blue?style=for-the-badge)](http://tweetyproject.org/)
 [![Cross-Platform](https://img.shields.io/badge/OS-Windows%20%7C%20Linux%20%7C%20macOS-success?style=for-the-badge)](#)
@@ -14,8 +15,8 @@ Ce projet est une collection d'implémentations pour la **Représentation des Co
 Avant d'exécuter ce projet, assurez-vous d'avoir :
 
 - **Java JDK 17+** ([Télécharger](https://www.oracle.com/java/technologies/downloads/))
+- **Python 3.8+** ([Télécharger](https://www.python.org/downloads/))
 - **Maven 3.6+** ([Télécharger](https://maven.apache.org/download.cgi))
-- **Python 3.8+** (pour les réseaux sémantiques TP5)
 - **Git** (pour cloner le dépôt)
 
 ### Vérifier l'installation
