@@ -1,0 +1,7 @@
+# Force GitHub to recognize this as a Java project
+*.c linguist-vendored
+*.h linguist-vendored
+tp1/src/* linguist-vendored
+
+# Mark Java as the primary language
+*.java linguist-detectable=true
