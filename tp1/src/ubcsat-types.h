@@ -329,4 +329,3 @@ typedef struct typeDYNAMICPARM {
   FLOAT fFactor;
 
 } DYNAMICPARM;
-

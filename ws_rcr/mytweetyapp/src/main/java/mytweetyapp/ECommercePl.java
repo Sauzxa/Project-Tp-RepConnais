@@ -16,19 +16,11 @@ public class ECommercePl {
         PlParser parser = new PlParser();
         PlBeliefSet kb = new PlBeliefSet();
 
-        /*
-         * RULES of the E-commerce platform:
-         * 1. If Payment is received AND Item is in stock, then the Order is Shipped
-         * 2. If the Order is Shipped, the Customer is Notified (Email/SMS sent)
-         */
+        // Rules of the E-commerce platform
         kb.add((PlFormula) parser.parseFormula("(PaymentReceived && ItemInStock) => OrderShipped"));
         kb.add((PlFormula) parser.parseFormula("OrderShipped => CustomerNotified"));
 
-        /*
-         * FACTS (What actually happened in reality for this specific order):
-         * - Payment was processed successfully.
-         * - The Warehouse confirms the item is in stock.
-         */
+        // Facts for the specific order
         kb.add((PlFormula) parser.parseFormula("PaymentReceived")); 
         kb.add((PlFormula) parser.parseFormula("ItemInStock"));     
         
@@ -40,15 +32,15 @@ public class ECommercePl {
         
         System.out.println("\n--- Queries & Exploitation ---");
         
-        // Query 1: Can we infer that the order is shipped?
+        // Query 1: Will the order be shipped?
         PlFormula query1 = (PlFormula) parser.parseFormula("OrderShipped");
         System.out.println("Q1: Will the order be shipped? -> " + reasoner.query(kb, query1));
 
-        // Query 2: Did the system infer that we should notify the customer?
+        // Query 2: Has the customer been notified?
         PlFormula query2 = (PlFormula) parser.parseFormula("CustomerNotified");
         System.out.println("Q2: Has the customer been notified? -> " + reasoner.query(kb, query2));
         
-        // Query 3: Is it possible the payment failed?
+        // Query 3: Is the payment missing?
         PlFormula query3 = (PlFormula) parser.parseFormula("!PaymentReceived");
         System.out.println("Q3: Is the payment missing? -> " + reasoner.query(kb, query3));
     }

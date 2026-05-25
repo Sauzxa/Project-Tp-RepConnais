@@ -1010,17 +1010,17 @@ void ReadCNF() {
     if (sLine[0] =='p') {
       if (bWeighted) {
         if (bIsWCNF) {
-          sscanf(sLine,"p wcnf %u %u",&iNumVars,&iNumClauses);
+          sscanf(sLine,"p wcnf %lu %lu",&iNumVars,&iNumClauses);
         } else {
           ReportPrint(pRepErr,"Warning! reading .cnf file and setting all weights = 1\n");
-          sscanf(sLine,"p cnf %u %u",&iNumVars,&iNumClauses);
+          sscanf(sLine,"p cnf %lu %lu",&iNumVars,&iNumClauses);
         }
       } else {
         if (bIsWCNF) {
           ReportPrint(pRepErr,"Warning! reading .wcnf file and ignoring all weights\n");
-          sscanf(sLine,"p wcnf %u %u",&iNumVars,&iNumClauses);
+          sscanf(sLine,"p wcnf %lu %lu",&iNumVars,&iNumClauses);
         } else {
-          sscanf(sLine,"p cnf %u %u",&iNumVars,&iNumClauses);
+          sscanf(sLine,"p cnf %lu %lu",&iNumVars,&iNumClauses);
         }
       }
     } else {
@@ -1072,7 +1072,7 @@ void ReadCNF() {
     aClauseLen[j] = 0;
 
     do {
-      iScanRet = fscanf(filInput,"%d",&l);
+      iScanRet = fscanf(filInput,"%ld",&l);
 
       while (iScanRet != 1) {
         if (iScanRet==0) {
@@ -1080,7 +1080,7 @@ void ReadCNF() {
 
           if (sLine[0] =='c') {
             ReportPrint1(pRepErr,"Warning: Ingoring comment line mid instance:\n   %s",sLine);
-            iScanRet = fscanf(filInput,"%d",&l);
+            iScanRet = fscanf(filInput,"%ld",&l);
           } else {
             ReportPrint1(pRepErr,"Error reading instance at clause [%u]\n",j);
             ReportPrint1(pRepErr,"  at or near: %s\n",sLine);
@@ -1108,7 +1108,7 @@ void ReadCNF() {
         *pNextLit = SetLitFromFile(l);
 
         if (GetVarFromLit(*pNextLit) > iNumVars) {
-          ReportPrint2(pRepErr,"Error: Invalid Literal [%d] in clause [%u]\n",l,j);
+          ReportPrint2(pRepErr,"Error: Invalid Literal [%ld] in clause [%u]\n",l,j);
           AbnormalExit();
         }
 

@@ -3,6 +3,13 @@
   <groupId>mytweety.mytweetyapp</groupId>
   <artifactId>mytweetyapp</artifactId>
   <version>0.0.1-SNAPSHOT</version>
+
+  <properties>
+    <maven.compiler.source>17</maven.compiler.source>
+    <maven.compiler.target>17</maven.compiler.target>
+    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    <javafx.version>21.0.5</javafx.version>
+  </properties>
   
 <dependencies>
 <dependency>
@@ -15,6 +22,29 @@
     <artifactId>owlapi-distribution</artifactId>
     <version>5.5.0</version>
 </dependency>
+<dependency>
+    <groupId>org.openjfx</groupId>
+    <artifactId>javafx-controls</artifactId>
+    <version>${javafx.version}</version>
+</dependency>
+<dependency>
+    <groupId>org.slf4j</groupId>
+    <artifactId>slf4j-nop</artifactId>
+    <version>2.0.7</version>
+</dependency>
 </dependencies>  
+
+<build>
+  <plugins>
+    <plugin>
+      <groupId>org.openjfx</groupId>
+      <artifactId>javafx-maven-plugin</artifactId>
+      <version>0.0.8</version>
+      <configuration>
+        <mainClass>mytweetyapp.TpRunnerFx</mainClass>
+      </configuration>
+    </plugin>
+  </plugins>
+</build>
 
 </project>

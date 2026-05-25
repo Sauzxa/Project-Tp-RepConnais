@@ -1,2 +1,58 @@
+# Build artifacts
+target/
+*.class
+*.jar
+*.war
+*.ear
+
+# IDE files
+.vscode/
+.idea/
+*.iml
+.project
+.classpath
+.settings/
+
+# OS files
+.DS_Store
+Thumbs.db
+*.swp
+*~
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.Python
+*.egg-info/
+dist/
+build/
+
+# Compiled binaries
+tp1/ubcsat
+*.exe
+*.out
+*.o
+
+# LaTeX auxiliary files
+*.aux
+*.log
+*.toc
+*.out
+*.synctex.gz
+*.fdb_latexmk
+*.fls
+*.bbl
+*.blg
+
+# Report and documentation (managed on Overleaf)
 docs/
+captures/
+acaddocs/
 explanation.md
+
+# Maven wrapper (optional - uncomment if you don't want to commit it)
+# .mvn/
+# mvnw
+# mvnw.cmd

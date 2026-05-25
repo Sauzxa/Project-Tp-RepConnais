@@ -1,132 +1,197 @@
-# 🧠 Knowledge Representation & Reasoning (RCR) 
+# 🧠 Représentation des Connaissances et Raisonnement (RCR) 
 
 [![Java](https://img.shields.io/badge/Java-17%2B-ED8B00?style=for-the-badge&logo=java&logoColor=white)](https://www.java.com/)
 [![Maven](https://img.shields.io/badge/Maven-3.6%2B-C71A22?style=for-the-badge&logo=apache-maven&logoColor=white)](https://maven.apache.org/)
 [![TweetyProject](https://img.shields.io/badge/Tweety-1.23-blue?style=for-the-badge)](http://tweetyproject.org/)
 [![Cross-Platform](https://img.shields.io/badge/OS-Windows%20%7C%20Linux%20%7C%20macOS-success?style=for-the-badge)](#)
 
-This project is a collection of implementations for **Knowledge Representation and Reasoning (RCR)**, explicitly designed to model real-world domains without relying on standard/generic textbook exercises (TDs). It leverages frameworks like **TweetyProject** for mathematical logic manipulation, proving, and semantic reasoning.
+Ce projet est une collection d'implémentations pour la **Représentation des Connaissances et Raisonnement (RCR)**, explicitement conçu pour modéliser des domaines réels sans s'appuyer sur des exercices de TD standards/génériques. Il exploite des frameworks comme **TweetyProject** pour la manipulation logique mathématique, la preuve et le raisonnement sémantique.
 
 ---
 
-## 🏗️ Project Architecture
+## 📋 Prérequis
 
-The workspace is organized into separate modules targeting different logic ecosystems:
+Avant d'exécuter ce projet, assurez-vous d'avoir :
 
-```text
-TP-Rep-Connaissance/
-├── ws_rcr/
-│   ├── pom.xml               # Parent Maven project for all Java modules
-│   ├── mytweetyapp/          # ☕ Main Maven Java project using the Tweety Libs
-│       ├── pom.xml           # Dependencies (tweety-full v1.23)
-│       └── src/main/java/mytweetyapp/
-│           ├── SmartCityFol.java       # First-Order Logic Implementation 
-│           ├── ECommercePl.java        # Propositional Logic Implementation
-│           ├── SubscriptionDefL.java   # Default Logic Implementation
-│           └── HospitalSemanticNet.java # Semantic Networks Implementation
-│   └── tp06/                 # OWL API / Description Logic Maven module
-│       ├── pom.xml           # OWL API + HermiT dependencies
-│       └── src/tp06/descLogic.java
-├── tp1/                      # 🧩 Propositional Logic & SAT Solving (C / Python)
-│   ├── ubcsat                # Compiled binary for SAT solving (Requires rebuild on Windows)
-│   └── inference.py          # Python inference scripts
-├── tp4/                      # 🔄 Default Logic & Non-Monotonic Reasoning (Java)
-│   └── extensioncalculator/
-└── tp5/                      # 🕸️ Semantic Networks
-    └── semantic_networks/    # Python graph implementation
+- **Java JDK 17+** ([Télécharger](https://www.oracle.com/java/technologies/downloads/))
+- **Maven 3.6+** ([Télécharger](https://maven.apache.org/download.cgi))
+- **Python 3.8+** (pour les réseaux sémantiques TP5)
+- **Git** (pour cloner le dépôt)
+
+### Vérifier l'installation
+```bash
+java -version    # Doit afficher Java 17 ou supérieur
+mvn -version     # Doit afficher Maven 3.6 ou supérieur
+python3 --version # Doit afficher Python 3.8 ou supérieur
 ```
 
 ---
 
-## 📦 What's Inside? (The 4 Core TPs)
+## 🚀 Démarrage Rapide (Pour les Enseignants/Évaluateurs)
 
-Our practical applications (TPs) model modern, original use cases. 
+### 1. Cloner le Dépôt
+```bash
+git clone <url-du-dépôt>
+cd TP-Rep-Connaissance
+```
 
-### 1️⃣ TP 1: First-Order Logic (FOL) — Smart City Public Transport
-Models a smart city's transportation capabilities. 
-* **Knowledge Representation**: 
-  * Sorts: `Vehicle`, `Station`
-  * Predicates: `StopsAt`, `Electric`, `Connected`
-* **Exploitation**: Utilizes a `SimpleFolReasoner` to prove symmetrical connectivity logic and perform existential queries on the transport web (e.g., verifying if an *electric* vehicle reaches a specific *station*).
+### 2. Compiler Tous les Projets Java
+```bash
+cd ws_rcr
+mvn clean install
+```
+Cela téléchargera toutes les dépendances et compilera les projets. La première exécution peut prendre quelques minutes.
 
-### 2️⃣ TP 2: Propositional Logic (PL) — E-Commerce Logistics
-Models an automated order processing pipeline.
-* **Knowledge Representation**: Rules regarding `PaymentReceived`, `ItemInStock`, `OrderShipped`, and `CustomerNotified`.
-* **Exploitation**: The system receives facts regarding payment & stock, and the `SatReasoner` autonomously infers if the client should receive an automated email.
+### 3. Exécuter l'Interface Graphique Unifiée (Recommandé)
+```bash
+mvn -pl mytweetyapp exec:java -Dexec.mainClass="mytweetyapp.TpRunnerFx"
+```
+Cela lance une interface interactive présentant tous les modèles logiques.
 
-### 3️⃣ TP 3: Default Logic (DL) — Auto-Renewing Subscriptions
-Models non-monotonic logic for software subscription billing.
-* **Knowledge Representation**: A `DefaultTheory` loaded with Relational Default Logic syntax (RDL).
-  * Rule: "Subscribers auto-renew by *default*, UNLESS their card has expired."
-* **Exploitation**: The `SimpleDefaultReasoner` evaluates multiple users, assuming one auto-renews because it has no conflicting facts, while simultaneously proving another user *cannot* auto-renew because of an expired card fact overriding the default rule.
-
-### 4️⃣ TP 4: Semantic Networks — Hospital Staff Topology 
-Models deep object-property inheritance within a hospital environment.
-* **Knowledge Representation**: Programmatic Directed Graph featuring `Nodes` and `Relations/Edges` (`is-a`, `works-in`).
-* **Exploitation**: An inheritance traversal algorithm automatically traverses the hierarchy tree to infer that "Dr. House" works in a hospital because he inherits the trait from his ancestor node (`Healthcare_Professional`).
+### 4. Consulter le Rapport
+Le rapport complet du projet sera fourni séparément au format PDF (compilé depuis Overleaf).
 
 ---
 
-## 🚀 How to Run (Cross-Platform: Windows / Linux / macOS)
+## 🏗️ Architecture du Projet
 
-The project relies heavily on Java and Python, making it completely cross-platform. Maven is highly recommended to handle dependencies seamlessly regardless of your OS.
+L'espace de travail est organisé pour séparer clairement nos **projets réels personnalisés** des exercices TD classiques :
 
-### Running the Java Tweety Components (Works the same on Windows & Linux)
-The easiest way is to use **Maven** in your terminal or Command Prompt/PowerShell:
+```text
+TP-Rep-Connaissance/
+├── 🌟 PROJETS RÉELS PERSONNALISÉS (Soumission Finale)
+│   ├── ws_rcr/
+│   │   ├── pom.xml               # Projet Maven parent
+│   │   ├── mytweetyapp/          # ☕ Projet Maven principal utilisant les bibliothèques Tweety
+│   │   │   ├── pom.xml           
+│   │   │   └── src/main/java/mytweetyapp/
+│   │   │       ├── SmartCityFol.java       # Logique du Premier Ordre : Ville Intelligente
+│   │   │       ├── ECommercePl.java        # Logique Propositionnelle : E-Commerce
+│   │   │       ├── SubscriptionDefL.java   # Logique par Défaut : Abonnements
+│   │   │       ├── HospitalSemanticNet.java # Réseaux Sémantiques : Hôpital
+│   │   │       ├── TpRunnerFx.java         # 🖥️ Interface Graphique JavaFX Unifiée
+│   │   │       └── ...
+│   │   └── tp06/                 # Module OWL API / Logique de Description
+│   │       ├── pom.xml           
+│   │       └── src/tp06/descLogic.java
+│   │
+└── 📚 TPs CLASSIQUES (Exercices TD & Archives)
+    ├── tp1/                      # 🧩 Logique Propositionnelle & Résolution SAT (C / Python)
+    │   ├── ubcsat                # Binaire compilé pour la résolution SAT
+    │   └── inference.py          # Scripts d'inférence Python
+    ├── tp2/                      # Archives FOL TD
+    ├── tp3/                      # Archives Logique Modale TD
+    ├── tp4/                      # 🔄 Logique par Défaut & Raisonnement Non-Monotone (Java)
+    │   └── extensioncalculator/
+    └── tp5/                      # 🕸️ Réseaux Sémantiques (Python)
+        └── semantic_networks/
+```
 
-1. **Navigate to the Java workspace**
+---
+
+## 📦 Contenu du Projet (Les 4 TPs Principaux)
+
+Nos applications pratiques (TPs) modélisent des cas d'usage modernes et originaux.
+
+### 1️⃣ TP 1 : Logique du Premier Ordre (FOL) — Transport Public Ville Intelligente
+Modélise les capacités de transport d'une ville intelligente.
+* **Représentation des Connaissances** : 
+  * Sortes : `Vehicle`, `Station`
+  * Prédicats : `StopsAt`, `Electric`, `Connected`
+* **Exploitation** : Utilise un `SimpleFolReasoner` pour prouver la logique de connectivité symétrique et effectuer des requêtes existentielles sur le réseau de transport (par exemple, vérifier si un véhicule *électrique* atteint une *station* spécifique).
+
+### 2️⃣ TP 2 : Logique Propositionnelle (PL) — Logistique E-Commerce
+Modélise un pipeline automatisé de traitement des commandes.
+* **Représentation des Connaissances** : Règles concernant `PaymentReceived`, `ItemInStock`, `OrderShipped`, et `CustomerNotified`.
+* **Exploitation** : Le système reçoit des faits concernant le paiement et le stock, et le `SatReasoner` infère automatiquement si le client doit recevoir un email automatique.
+
+### 3️⃣ TP 3 : Logique par Défaut (DL) — Abonnements à Renouvellement Automatique
+Modélise la logique non-monotone pour la facturation des abonnements logiciels.
+* **Représentation des Connaissances** : Une `DefaultTheory` chargée avec la syntaxe de Logique par Défaut Relationnelle (RDL).
+  * Règle : "Les abonnés se renouvellent automatiquement par *défaut*, SAUF si leur carte a expiré."
+* **Exploitation** : Le `SimpleDefaultReasoner` évalue plusieurs utilisateurs, supposant qu'un utilisateur se renouvelle automatiquement car il n'a pas de faits contradictoires, tout en prouvant simultanément qu'un autre utilisateur *ne peut pas* se renouveler automatiquement en raison d'un fait de carte expirée qui annule la règle par défaut.
+
+### 4️⃣ TP 4 : Réseaux Sémantiques — Topologie du Personnel Hospitalier
+Modélise l'héritage profond objet-propriété dans un environnement hospitalier.
+* **Représentation des Connaissances** : Graphe Orienté Programmatique comportant des `Nœuds` et des `Relations/Arêtes` (`is-a`, `works-in`).
+* **Exploitation** : Un algorithme de traversée d'héritage parcourt automatiquement l'arbre hiérarchique pour inférer que "Dr. House" travaille dans un hôpital car il hérite du trait de son nœud ancêtre (`Healthcare_Professional`).
+
+---
+
+## 🚀 Comment Exécuter (Multi-plateforme : Windows / Linux / macOS)
+
+Le projet repose principalement sur Java et Python, le rendant complètement multi-plateforme. Maven est fortement recommandé pour gérer les dépendances de manière transparente quel que soit votre système d'exploitation.
+
+### Exécution des Composants Java Tweety (Fonctionne de la même manière sur Windows et Linux)
+La façon la plus simple est d'utiliser **Maven** dans votre terminal ou Invite de commandes/PowerShell :
+
+1. **Naviguer vers l'espace de travail Java**
    ```bash
    cd ws_rcr
    ```
-2. **Compile all Java modules** (Downloads dependencies if not cached)
+2. **Compiler tous les modules Java** (Télécharge les dépendances si non mises en cache)
    ```bash
    mvn clean install
    ```
-3. **Run the Smart City (FOL) Example**
+
+### 🖥️ Exécution de l'Interface Graphique Unifiée (GUI)
+Pour lancer l'interface JavaFX interactive qui regroupe tous les projets et modèles logiques dans un tableau de bord visuel :
+```bash
+mvn -pl mytweetyapp exec:java -Dexec.mainClass="mytweetyapp.TpRunnerFx"
+```
+
+### 🖥️ Exécution des Modules CLI Individuellement
+
+3. **Exécuter l'exemple Ville Intelligente (FOL)**
    ```bash
    mvn -pl mytweetyapp exec:java -Dexec.mainClass="mytweetyapp.SmartCityFol"
    ```
-4. **Run the E-commerce (PL) Example**
+4. **Exécuter l'exemple E-commerce (PL)**
    ```bash
    mvn -pl mytweetyapp exec:java -Dexec.mainClass="mytweetyapp.ECommercePl"
    ```
-5. **Run the Subscription (Default Logic) Example**
+5. **Exécuter l'exemple Abonnement (Logique par Défaut)**
    ```bash
    mvn -pl mytweetyapp exec:java -Dexec.mainClass="mytweetyapp.SubscriptionDefL"
    ```
-6. **Run the Hospital (Semantic Network) Example**
+6. **Exécuter l'exemple Hôpital (Réseau Sémantique)**
    ```bash
    mvn -pl mytweetyapp exec:java -Dexec.mainClass="mytweetyapp.HospitalSemanticNet"
    ```
-7. **Run the Description Logic / OWL API Example**
+7. **Exécuter l'exemple Logique de Description / OWL API**
    ```bash
    mvn -pl tp06 exec:java -Dexec.mainClass="tp06.descLogic"
    ```
 
-If you are already inside `ws_rcr/mytweetyapp`, you can omit `-pl mytweetyapp`:
+Si vous êtes déjà dans `ws_rcr/mytweetyapp`, vous pouvez omettre `-pl mytweetyapp` :
 ```bash
 cd ws_rcr/mytweetyapp
 mvn exec:java -Dexec.mainClass="mytweetyapp.SmartCityFol"
 ```
 
-When running commands from `ws_rcr`, keep the `-pl` option. Without it, Maven runs the same command on every module, so a `mytweetyapp.*` class will run in `mytweetyapp` and then fail in `tp06`.
+Lors de l'exécution de commandes depuis `ws_rcr`, conservez l'option `-pl`. Sans elle, Maven exécute la même commande sur chaque module, donc une classe `mytweetyapp.*` s'exécutera dans `mytweetyapp` puis échouera dans `tp06`.
 
-### Running the Auxiliary Scripts
+Commande rapide (depuis `ws_rcr`) pour les Réseaux Sémantiques :
+```bash
+mvn -pl mytweetyapp exec:java -Dexec.mainClass="mytweetyapp.HospitalSemanticNet"
+```
 
-**Python Scripts (TP5):**
-On Windows:
+### Exécution des Scripts Auxiliaires
+
+**Scripts Python (TP5) :**
+Sur Windows :
 ```cmd
 python tp5/semantic_networks/main.py
 ```
-On Linux/macOS:
+Sur Linux/macOS :
 ```bash
 python3 tp5/semantic_networks/main.py
 ```
 
-**C-Based SAT solver (TP1):**
-_Note: Pre-compiled `.exe` binaries were removed for repository hygiene._
-On Windows, you can compile the `.c` files using `gcc` (MinGW) or simply use a C IDE like Code::Blocks.
-On Linux/macOS, simply use the Makefile:
+**Solveur SAT basé sur C (TP1) :**
+_Note : Les binaires précompilés `.exe` ont été supprimés pour l'hygiène du dépôt._
+Sur Windows, vous pouvez compiler les fichiers `.c` en utilisant `gcc` (MinGW) ou simplement utiliser un IDE C comme Code::Blocks.
+Sur Linux/macOS, utilisez simplement le Makefile :
 ```bash
 cd tp1/
 make
@@ -135,5 +200,61 @@ make
 
 ---
 
-## 🛡️ License & Academic Integrity
-This repository adheres to the academic constraint of building real-world representative logic models without copying provided Tutorial (TD) examples. Developed for the RCR module.
+## 🐛 Dépannage
+
+### Échec de la Compilation Maven
+- **Problème** : `JAVA_HOME non défini`
+  - **Solution** : Définir la variable d'environnement JAVA_HOME vers le chemin d'installation de votre JDK
+  ```bash
+  # Linux/macOS
+  export JAVA_HOME=/chemin/vers/jdk-17
+  
+  # Windows (PowerShell)
+  $env:JAVA_HOME="C:\Program Files\Java\jdk-17"
+  ```
+
+### L'Interface Graphique JavaFX ne se Lance pas
+- **Problème** : Modules JavaFX manquants
+  - **Solution** : Le projet utilise OpenJFX que Maven télécharge automatiquement. Si les problèmes persistent, assurez-vous d'utiliser JDK 17+
+
+### Échec des Scripts Python
+- **Problème** : Module non trouvé
+  - **Solution** : Installer les packages requis
+  ```bash
+  pip install -r requirements.txt  # Si requirements.txt existe
+  ```
+
+### Permission Refusée sur Linux/macOS
+- **Problème** : Impossible d'exécuter les scripts
+  - **Solution** : Rendre les scripts exécutables
+  ```bash
+  chmod +x tp1/ubcsat
+  ```
+
+---
+
+## 📚 Résumé de la Structure du Projet
+
+| Répertoire | Description |
+|-----------|-------------|
+| `ws_rcr/mytweetyapp/` | Projet Java principal avec implémentations Tweety |
+| `ws_rcr/tp06/` | Module OWL API / Logique de Description |
+| `tp1/` | Résolution SAT (C/Python) |
+| `tp5/` | Réseaux sémantiques (Python) |
+
+---
+
+## 👥 Auteurs
+
+- YEDDOU Abdelkader Raouf (222231501902)
+- FERGUENE Abdelraouf (222231361813)
+- OULDGOUGAM Riad Madjid (222231472314)
+
+**Master 1 - Ingénierie des Systèmes Informatiques Intelligents (SII)**  
+**Module** : Représentation des connaissances et raisonnement  
+**Année Universitaire** : 2025 / 2026
+
+---
+
+## 🛡️ Licence & Intégrité Académique
+Ce dépôt respecte la contrainte académique de construire des modèles logiques représentatifs du monde réel sans copier les exemples de Travaux Dirigés (TD) fournis. Développé pour le module RCR à l'USTHB.
