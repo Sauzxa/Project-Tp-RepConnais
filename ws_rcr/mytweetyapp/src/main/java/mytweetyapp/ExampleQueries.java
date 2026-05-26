@@ -33,11 +33,16 @@ public final class ExampleQueries {
 
     private static final Map<String, List<String>> RELATIONS = Map.ofEntries(
             Map.entry("SmartCityFol", List.of("stops-at", "electric", "connected")),
-            Map.entry("ECommercePl", List.of("order-shipped", "customer-notified", "payment-received", "item-in-stock")),
+            Map.entry("ECommercePl", List.of(
+                    "order-confirmed", "order-shipped", "customer-notified",
+                    "payment-received", "item-in-stock", "fraud-check-passed",
+                    "shipping-address-valid", "refund-issued")),
             Map.entry("SubscriptionDefL", List.of("autorenew", "subscriber", "card-expired")),
             Map.entry("HospitalSemanticNet", List.of("works-in", "performs", "is-a")),
             Map.entry("UniversitySemanticNet", List.of("works-in", "teaches", "is-a")),
-            Map.entry("BirdExceptionSemanticNet", List.of("locomotion", "voler", "is-a", "exception"))
+            Map.entry("BirdExceptionSemanticNet", List.of("locomotion", "voler", "is-a", "exception")),
+            Map.entry("desclogic", List.of("type", "stops-at", "connects")),
+            Map.entry("SmartCityModal", List.of("necessary", "possible"))
     );
 
     public static QueryAnswer ask(Class<?> clazz, String subject, String relation, String object)
@@ -53,12 +58,17 @@ public final class ExampleQueries {
             case "HospitalSemanticNet" -> queryHospital(sub, rel, obj);
             case "UniversitySemanticNet" -> queryUniversity(sub, rel, obj);
             case "BirdExceptionSemanticNet" -> queryBird(sub, rel, obj);
+            case "desclogic" -> desclogic.ask(sub, rel, obj);
+            case "SmartCityModal" -> SmartCityModal.ask(sub, rel, obj);
             default -> new QueryAnswer(false, "?", "Interactive queries are not supported for this example.");
         };
     }
 
     private static QueryAnswer querySmartCity(String subject, String relation, String object)
             throws ParserException, IOException {
+        if ("connects".equals(relation)) {
+            relation = "connected";
+        }
         var ctx = SmartCityFol.buildContext();
         String formula = switch (relation) {
             case "stops-at", "on", "stopsat" -> {
@@ -87,24 +97,21 @@ public final class ExampleQueries {
     private static QueryAnswer queryECommerce(String subject, String relation) throws ParserException, IOException {
         PlParser parser = new PlParser();
         PlBeliefSet kb = ECommercePl.buildKnowledgeBase(parser);
-        String atom = switch (relation) {
-            case "order-shipped", "ordershipped" -> "OrderShipped";
-            case "customer-notified", "customernotified" -> "CustomerNotified";
-            case "payment-received", "paymentreceived" -> "PaymentReceived";
-            case "item-in-stock", "iteminstock" -> "ItemInStock";
-            default -> null;
-        };
+        String atom = ECommercePlKb.atomForRelation(relation);
         if (atom == null) {
-            return new QueryAnswer(false, "?", "Use: order-shipped, customer-notified, payment-received, item-in-stock.");
+            return new QueryAnswer(false, "?",
+                    "Relations: order-confirmed, order-shipped, customer-notified, payment-received, "
+                            + "item-in-stock, fraud-check-passed, refund-issued.");
         }
         if (!subject.isBlank() && !subject.equalsIgnoreCase("order") && !subject.equalsIgnoreCase("customer")) {
             return new QueryAnswer(false, atom,
-                    "E-commerce queries use the relation only (subject is ignored). Example: Is order shipped?");
+                    "Requetes PL sur les propositions (Subject ignore). Ex: Is order shipped?");
         }
         PlFormula q = (PlFormula) parser.parseFormula(atom);
         SatReasoner reasoner = new SatReasoner();
         boolean ok = reasoner.query(kb, q);
-        return new QueryAnswer(ok, atom, explain(ok, atom));
+        String ctx = " (scenario GUI: commande acceptee — " + ECommercePlKb.scenarioLabel(ECommercePlKb.Scenario.SUCCESS) + ")";
+        return new QueryAnswer(ok, atom, explain(ok, atom) + ctx);
     }
 
     private static QueryAnswer querySubscription(String subject, String relation) throws ParserException, IOException {
@@ -220,11 +227,16 @@ public final class ExampleQueries {
     public static Map<String, String> exampleHints() {
         Map<String, String> hints = new LinkedHashMap<>();
         hints.put("SmartCityFol", "Is tramA on northPark? | Is tramA electric? | Is northPark connected centralStation?");
-        hints.put("ECommercePl", "Is order order-shipped? | Is customer customer-notified?");
+        hints.put("ECommercePl",
+                "Is order shipped? | Is order confirmed? | Is payment received? | Is refund issued?");
         hints.put("SubscriptionDefL", "Is alice autorenew? | Is bob card-expired?");
         hints.put("HospitalSemanticNet", "Does Dr_House work-in Hospital? | Does Dr_House performs Surgery?");
         hints.put("BirdExceptionSemanticNet",
                 "Does Moineaux voler? | Is Autruche a Oiseaux? | Does Moineaux locomotion Voler? | Does Autruche exception Voler?");
+        hints.put("desclogic",
+                "Tram(tramA) | Is tramA a Tram? | Is tramA on northPark? | Is northPark connected centralStation?");
+        hints.put("SmartCityModal",
+                "necessary + !Moving | possible + Moving | formula: <>(PowerFailure)");
         return hints;
     }
 }

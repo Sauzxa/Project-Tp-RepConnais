@@ -20,8 +20,6 @@
         </rdfs:comment>
     </owl:Ontology>
 
-    <!-- ========== T-BOX : Concepts ========== -->
-
     <owl:Class rdf:about="#TransportEntity">
         <rdfs:label>Entite de transport</rdfs:label>
     </owl:Class>
@@ -63,15 +61,12 @@
         <rdfs:subClassOf rdf:resource="#TransportEntity"/>
     </owl:Class>
 
-    <!-- Electric et Diesel sont disjoints -->
     <owl:AllDisjointClasses>
         <owl:members rdf:parseType="Collection">
             <rdf:Description rdf:about="#ElectricVehicle"/>
             <rdf:Description rdf:about="#DieselVehicle"/>
         </owl:members>
     </owl:AllDisjointClasses>
-
-    <!-- ========== T-BOX : Roles ========== -->
 
     <owl:ObjectProperty rdf:about="#stopsAt">
         <rdfs:label>s'arrete a</rdfs:label>
@@ -91,8 +86,6 @@
         <rdfs:domain rdf:resource="#Vehicle"/>
         <rdfs:range rdf:resource="&xsd;nonNegativeInteger"/>
     </owl:DatatypeProperty>
-
-    <!-- ========== A-BOX : Individus et faits ========== -->
 
     <owl:NamedIndividual rdf:about="#tramA">
         <rdfs:label>Tram A</rdfs:label>

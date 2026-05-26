@@ -8,40 +8,76 @@ import org.tweetyproject.logics.pl.syntax.PlFormula;
 
 import java.io.IOException;
 
+/**
+ * TP 2 : Logique propositionnelle — traitement d'une commande e-commerce.
+ * Chaque etape du workflow est une proposition ; les regles metier sont des implications.
+ *
+ * @see ECommercePlKb
+ */
 public class ECommercePl {
 
+    public record PlContext(PlParser parser, PlBeliefSet kb, SatReasoner reasoner) {
+    }
+
     public static PlBeliefSet buildKnowledgeBase(PlParser parser) throws ParserException, IOException {
+        return buildKnowledgeBase(parser, ECommercePlKb.Scenario.SUCCESS);
+    }
+
+    public static PlBeliefSet buildKnowledgeBase(PlParser parser, ECommercePlKb.Scenario scenario)
+            throws ParserException, IOException {
         PlBeliefSet kb = new PlBeliefSet();
-        kb.add((PlFormula) parser.parseFormula("(PaymentReceived && ItemInStock) => OrderShipped"));
-        kb.add((PlFormula) parser.parseFormula("OrderShipped => CustomerNotified"));
-        kb.add((PlFormula) parser.parseFormula("PaymentReceived"));
-        kb.add((PlFormula) parser.parseFormula("ItemInStock"));
+        for (String rule : ECommercePlKb.RULES) {
+            kb.add((PlFormula) parser.parseFormula(rule));
+        }
+        for (String fact : ECommercePlKb.factsFor(scenario)) {
+            kb.add((PlFormula) parser.parseFormula(fact));
+        }
         return kb;
     }
 
-    public static void main(String[] args) throws ParserException, IOException {
-        System.out.println("=== TP 2: Propositional Logic (E-commerce Order Processing) ===");
+    public static PlContext buildContext() throws ParserException, IOException {
+        return buildContext(ECommercePlKb.Scenario.SUCCESS);
+    }
 
+    public static PlContext buildContext(ECommercePlKb.Scenario scenario) throws ParserException, IOException {
         PlParser parser = new PlParser();
-        PlBeliefSet kb = buildKnowledgeBase(parser);
+        PlBeliefSet kb = buildKnowledgeBase(parser, scenario);
+        return new PlContext(parser, kb, new SatReasoner());
+    }
 
-        System.out.println("Knowledge Base Created: ");
-        System.out.println(kb.toString());
+    public static void main(String[] args) throws ParserException, IOException {
+        System.out.println("=== TP 2: Logique propositionnelle — E-commerce ===\n");
 
-        SatReasoner reasoner = new SatReasoner();
-        
-        System.out.println("\n--- Queries & Exploitation ---");
-        
-        // Query 1: Will the order be shipped?
-        PlFormula query1 = (PlFormula) parser.parseFormula("OrderShipped");
-        System.out.println("Q1: Will the order be shipped? -> " + reasoner.query(kb, query1));
+        runScenario(ECommercePlKb.Scenario.SUCCESS);
+        runScenario(ECommercePlKb.Scenario.FRAUD_BLOCKED);
+        runScenario(ECommercePlKb.Scenario.OUT_OF_STOCK);
 
-        // Query 2: Has the customer been notified?
-        PlFormula query2 = (PlFormula) parser.parseFormula("CustomerNotified");
-        System.out.println("Q2: Has the customer been notified? -> " + reasoner.query(kb, query2));
-        
-        // Query 3: Is the payment missing?
-        PlFormula query3 = (PlFormula) parser.parseFormula("!PaymentReceived");
-        System.out.println("Q3: Is the payment missing? -> " + reasoner.query(kb, query3));
+        System.out.println("\n--- Ask (GUI) ---");
+        System.out.println("Ex: Is order shipped? | Is payment received? | Is refund issued?");
+        System.out.println("Scenario actif dans l'interface : SUCCESS (commande acceptee).");
+    }
+
+    private static void runScenario(ECommercePlKb.Scenario scenario) throws ParserException, IOException {
+        ECommercePlKb.printKnowledge(scenario);
+        PlContext ctx = buildContext(scenario);
+        PlParser parser = ctx.parser();
+        SatReasoner reasoner = ctx.reasoner();
+
+        System.out.println("\n--- Base Tweety ---");
+        System.out.println(ctx.kb());
+
+        System.out.println("\n--- Requetes (entailment PL) ---");
+        String[] queries = switch (scenario) {
+            case SUCCESS -> ECommercePlKb.DEMO_QUERIES_SUCCESS;
+            case FRAUD_BLOCKED -> ECommercePlKb.DEMO_QUERIES_FRAUD;
+            case OUT_OF_STOCK -> ECommercePlKb.DEMO_QUERIES_STOCK;
+        };
+        for (String label : queries) {
+            String formula = label.replaceAll("\\s*\\?.*", "").trim();
+            PlFormula q = (PlFormula) parser.parseFormula(formula);
+            boolean ok = reasoner.query(ctx.kb(), q);
+            System.out.println("  " + label + "  →  " + ok);
+        }
+        System.out.println();
     }
 }

@@ -1,0 +1,26 @@
+% TP5 — Logique descriptive (Smart City Transport)
+% Notation : ⊓ ⊑ ⊥  C(a)  R(a,b)
+
+% ---------- T-BOX ----------
+Vehicle ⊑ TransportEntity
+PublicTransport ⊑ Vehicle
+ElectricVehicle ⊑ Vehicle
+DieselVehicle ⊑ Vehicle
+Tram ⊑ ElectricVehicle ⊓ PublicTransport
+Bus ⊑ PublicTransport
+Station ⊑ TransportEntity
+ElectricVehicle ⊓ DieselVehicle ⊑ ⊥
+
+% Roles
+% stopsAt : Vehicle → Station
+% connects : Station → Station (symetrique)
+
+% ---------- A-BOX ----------
+Tram(tramA)
+stopsAt(tramA, northPark)
+Bus(bus14)
+DieselVehicle(bus14)
+stopsAt(bus14, centralStation)
+Station(northPark)
+Station(centralStation)
+connects(northPark, centralStation)

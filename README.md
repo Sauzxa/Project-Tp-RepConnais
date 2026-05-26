@@ -106,11 +106,25 @@ Modélise un pipeline automatisé de traitement des commandes.
 * **Représentation des Connaissances** : Règles concernant `PaymentReceived`, `ItemInStock`, `OrderShipped`, et `CustomerNotified`.
 * **Exploitation** : Le système reçoit des faits concernant le paiement et le stock, et le `SatReasoner` infère automatiquement si le client doit recevoir un email automatique.
 
-### 3️⃣ TP 3 : Logique par Défaut (DL) — Abonnements à Renouvellement Automatique
+### 3️⃣ TP 3a : Logique modale — Sécurité tramway (Smart City)
+Modélise les **contraintes de sécurité** d'un tramway avec □ (nécessaire) et ◇ (possible).
+* **Axiomes** : `□(DoorOpen → ¬Moving)`, `□¬◇(DoorOpen ∧ Moving)`, `◇Moving`, `◇PowerFailure`
+* **Faits** : `AtStation`, `¬Moving`, `¬DoorOpen`
+* **Fichier** : `SmartCityModal.java`, `ModalLogicKb.java`
+* **Exécution** : `mvn -pl mytweetyapp exec:java -Dexec.mainClass="mytweetyapp.SmartCityModal"`
+
+### 3️⃣ TP 3b : Logique par Défaut (DL) — Abonnements à Renouvellement Automatique
 Modélise la logique non-monotone pour la facturation des abonnements logiciels.
 * **Représentation des Connaissances** : Une `DefaultTheory` chargée avec la syntaxe de Logique par Défaut Relationnelle (RDL).
   * Règle : "Les abonnés se renouvellent automatiquement par *défaut*, SAUF si leur carte a expiré."
 * **Exploitation** : Le `SimpleDefaultReasoner` évalue plusieurs utilisateurs, supposant qu'un utilisateur se renouvelle automatiquement car il n'a pas de faits contradictoires, tout en prouvant simultanément qu'un autre utilisateur *ne peut pas* se renouveler automatiquement en raison d'un fait de carte expirée qui annule la règle par défaut.
+
+### 5️⃣ TP 5 : Logique descriptive (DL) — Transport Public Ville Intelligente
+Même domaine que Smart City (TP1 FOL), exprimé en **notation DL** (`⊑`, `⊓`, `C(a)`, `R(a,b)`), sérialisé en OWL pour HermiT.
+* **T-Box** : `Tram ⊑ ElectricVehicle ⊓ PublicTransport`, `ElectricVehicle ⊓ DieselVehicle ⊑ ⊥`, rôles `stopsAt`, `connects`
+* **A-Box** : `Tram(tramA)`, `stopsAt(tramA, northPark)`, `DieselVehicle(bus14)`, `connects(northPark, centralStation)`
+* **Fichiers** : `DescriptionLogicKb.java`, `desclogic.dl`, `desclogic.owl`
+* **Exécution** : `mvn -pl mytweetyapp exec:java -Dexec.mainClass="mytweetyapp.desclogic"`
 
 ### 4️⃣ TP 4 : Réseaux Sémantiques — Topologie du Personnel Hospitalier
 Modélise l'héritage profond objet-propriété dans un environnement hospitalier.
