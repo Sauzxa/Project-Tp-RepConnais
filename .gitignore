@@ -50,7 +50,7 @@ tp1/ubcsat
 docs/
 captures/
 acaddocs/
-explanation.md
+# explanation.md
 
 # Maven wrapper (optional - uncomment if you don't want to commit it)
 # .mvn/
