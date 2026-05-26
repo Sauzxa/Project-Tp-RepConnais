@@ -9,25 +9,25 @@ import org.tweetyproject.logics.pl.syntax.PlFormula;
 import java.io.IOException;
 
 public class ECommercePl {
+
+    public static PlBeliefSet buildKnowledgeBase(PlParser parser) throws ParserException, IOException {
+        PlBeliefSet kb = new PlBeliefSet();
+        kb.add((PlFormula) parser.parseFormula("(PaymentReceived && ItemInStock) => OrderShipped"));
+        kb.add((PlFormula) parser.parseFormula("OrderShipped => CustomerNotified"));
+        kb.add((PlFormula) parser.parseFormula("PaymentReceived"));
+        kb.add((PlFormula) parser.parseFormula("ItemInStock"));
+        return kb;
+    }
+
     public static void main(String[] args) throws ParserException, IOException {
         System.out.println("=== TP 2: Propositional Logic (E-commerce Order Processing) ===");
 
-        // 1. Build the Knowledge Base
         PlParser parser = new PlParser();
-        PlBeliefSet kb = new PlBeliefSet();
+        PlBeliefSet kb = buildKnowledgeBase(parser);
 
-        // Rules of the E-commerce platform
-        kb.add((PlFormula) parser.parseFormula("(PaymentReceived && ItemInStock) => OrderShipped"));
-        kb.add((PlFormula) parser.parseFormula("OrderShipped => CustomerNotified"));
-
-        // Facts for the specific order
-        kb.add((PlFormula) parser.parseFormula("PaymentReceived")); 
-        kb.add((PlFormula) parser.parseFormula("ItemInStock"));     
-        
         System.out.println("Knowledge Base Created: ");
         System.out.println(kb.toString());
 
-        // 2. Reasoning / Exploitation
         SatReasoner reasoner = new SatReasoner();
         
         System.out.println("\n--- Queries & Exploitation ---");

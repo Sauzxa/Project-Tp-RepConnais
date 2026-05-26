@@ -25,7 +25,9 @@ import javafx.scene.control.CheckBox;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.ScrollPane;
+import javafx.scene.control.Separator;
 import javafx.scene.control.TextArea;
+import javafx.scene.control.TextField;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.HBox;
@@ -96,6 +98,19 @@ public class TpRunnerFx extends Application {
         updateExamples(tpSelector.getValue(), byTp, exampleSelector, logicTypeLabel);
         tpSelector.valueProperty().addListener((obs, oldValue, newValue) ->
                 updateExamples(newValue, byTp, exampleSelector, logicTypeLabel));
+        TextField nlQuestionField = new TextField();
+        nlQuestionField.setPromptText("e.g. Is tramA on northPark? / Does Dr_House work-in Hospital?");
+        TextField subjectField = new TextField();
+        subjectField.setPromptText("Subject (tramA, alice, Dr_House...)");
+        ComboBox<String> relationCombo = new ComboBox<>();
+        TextField objectField = new TextField();
+        objectField.setPromptText("Object (northPark, Hospital...)");
+        Button askButton = new Button("Ask");
+        Label queryHintLabel = new Label();
+        queryHintLabel.setWrapText(true);
+        VBox queryPanel = buildQueryPanel(
+                nlQuestionField, subjectField, relationCombo, objectField, askButton, queryHintLabel);
+
         exampleSelector.valueProperty().addListener((obs, oldValue, newValue) -> {
             logicTypeLabel.setText("Logic Type: " + (newValue == null ? "-" : newValue.logicType()));
             boolean isSemantic = newValue != null && "Semantic Networks".equals(newValue.logicType());
@@ -106,7 +121,17 @@ public class TpRunnerFx extends Application {
             } else {
                 semanticGraph.getChildren().clear();
             }
+            updateQueryPanel(newValue, queryPanel, relationCombo, queryHintLabel);
         });
+
+        askButton.setOnAction(evt -> runQuery(
+                exampleSelector.getValue(),
+                nlQuestionField,
+                subjectField,
+                relationCombo,
+                objectField,
+                outputArea,
+                askButton));
 
         runButton.setOnAction(
                 evt -> runExample(
@@ -123,11 +148,19 @@ public class TpRunnerFx extends Application {
         HBox optionsRow = new HBox(15, logicTypeLabel, showRawOutput, showKb);
         optionsRow.setStyle("-fx-alignment: center-left; -fx-padding: 0 0 5 0;");
         
-        VBox root = new VBox(15, topRow, optionsRow, outputArea, semanticContainer);
+        updateQueryPanel(exampleSelector.getValue(), queryPanel, relationCombo, queryHintLabel);
+
+        VBox root = new VBox(15, topRow, optionsRow, queryPanel, new Separator(), outputArea, semanticContainer);
         root.setPadding(new Insets(20));
         root.setStyle("-fx-background-color: #f0f2f5; -fx-font-family: 'Segoe UI', Helvetica, sans-serif; -fx-font-size: 14px;");
         
         runButton.setStyle("-fx-background-color: #3b82f6; -fx-text-fill: white; -fx-font-weight: bold; -fx-padding: 8 20; -fx-background-radius: 6; -fx-cursor: hand;");
+        askButton.setStyle("-fx-background-color: #059669; -fx-text-fill: white; -fx-font-weight: bold; -fx-padding: 8 20; -fx-background-radius: 6; -fx-cursor: hand;");
+        nlQuestionField.setStyle("-fx-background-color: white; -fx-border-color: #d1d5db; -fx-border-radius: 4; -fx-padding: 6;");
+        subjectField.setStyle(nlQuestionField.getStyle());
+        objectField.setStyle(nlQuestionField.getStyle());
+        relationCombo.setStyle("-fx-background-color: white; -fx-border-color: #d1d5db; -fx-border-radius: 4; -fx-padding: 3;");
+        queryHintLabel.setStyle("-fx-text-fill: #6b7280; -fx-font-size: 12px;");
         tpSelector.setStyle("-fx-background-color: white; -fx-border-color: #d1d5db; -fx-border-radius: 4; -fx-padding: 3; -fx-font-size: 13px;");
         exampleSelector.setStyle("-fx-background-color: white; -fx-border-color: #d1d5db; -fx-border-radius: 4; -fx-padding: 3; -fx-font-size: 13px;");
         logicTypeLabel.setStyle("-fx-text-fill: #4b5563; -fx-font-weight: bold;");
@@ -147,6 +180,102 @@ public class TpRunnerFx extends Application {
         stage.setMinWidth(980);
         stage.setMinHeight(760);
         stage.show();
+    }
+
+    private static VBox buildQueryPanel(
+            TextField nlQuestionField,
+            TextField subjectField,
+            ComboBox<String> relationCombo,
+            TextField objectField,
+            Button askButton,
+            Label queryHintLabel) {
+        Label queryTitle = new Label("Ask a question");
+        queryTitle.setStyle("-fx-font-weight: bold; -fx-font-size: 15px;");
+        HBox nlRow = new HBox(10, new Label("Natural language:"), nlQuestionField, askButton);
+        nlQuestionField.setPrefWidth(420);
+        HBox.setHgrow(nlQuestionField, Priority.ALWAYS);
+        HBox fieldsRow = new HBox(10,
+                new Label("Subject:"), subjectField,
+                new Label("Relation:"), relationCombo,
+                new Label("Object:"), objectField);
+        subjectField.setPrefWidth(140);
+        relationCombo.setPrefWidth(160);
+        objectField.setPrefWidth(140);
+        HBox.setHgrow(subjectField, Priority.SOMETIMES);
+        HBox.setHgrow(objectField, Priority.SOMETIMES);
+        VBox panel = new VBox(8, queryTitle, nlRow, fieldsRow, queryHintLabel);
+        panel.setStyle("-fx-background-color: #ffffff; -fx-border-color: #e5e7eb; -fx-border-radius: 8; -fx-background-radius: 8; -fx-padding: 12;");
+        return panel;
+    }
+
+    private static void updateQueryPanel(
+            ExampleDef example,
+            VBox queryPanel,
+            ComboBox<String> relationCombo,
+            Label queryHintLabel) {
+        boolean supported = example != null && ExampleQueries.supportsInteractiveQuery(example.entryClass());
+        queryPanel.setVisible(supported);
+        queryPanel.setManaged(supported);
+        if (!supported) {
+            return;
+        }
+        relationCombo.getItems().setAll(ExampleQueries.relationsFor(example.entryClass()));
+        if (!relationCombo.getItems().isEmpty()) {
+            relationCombo.getSelectionModel().selectFirst();
+        }
+        String hint = ExampleQueries.exampleHints().get(example.entryClass().getSimpleName());
+        queryHintLabel.setText(hint == null ? "" : "Examples: " + hint);
+    }
+
+    private static void runQuery(
+            ExampleDef example,
+            TextField nlQuestionField,
+            TextField subjectField,
+            ComboBox<String> relationCombo,
+            TextField objectField,
+            TextArea outputArea,
+            Button askButton) {
+        if (example == null || !ExampleQueries.supportsInteractiveQuery(example.entryClass())) {
+            outputArea.setText("Select an example that supports interactive queries.");
+            return;
+        }
+
+        String subject = subjectField.getText();
+        String relation = relationCombo.getValue() == null ? "" : relationCombo.getValue();
+        String object = objectField.getText();
+
+        var parsed = NaturalLanguageQueryParser.parse(nlQuestionField.getText());
+        if (parsed.isPresent()) {
+            subject = parsed.get().subject();
+            relation = parsed.get().relation();
+            object = parsed.get().object() == null ? "" : parsed.get().object();
+            subjectField.setText(subject);
+            if (relationCombo.getItems().contains(relation)) {
+                relationCombo.setValue(relation);
+            } else {
+                relationCombo.getItems().add(relation);
+                relationCombo.setValue(relation);
+            }
+            objectField.setText(object);
+        }
+
+        askButton.setDisable(true);
+        try {
+            QueryAnswer answer = ExampleQueries.ask(example.entryClass(), subject, relation, object);
+            String line = "QUERY: " + answer.formula() + System.lineSeparator()
+                    + "ANSWER: " + (answer.entailed() ? "YES" : "NO") + System.lineSeparator()
+                    + answer.explanation();
+            String existing = outputArea.getText();
+            if (existing == null || existing.isBlank() || existing.startsWith("Running ") || existing.equals("No example selected.")) {
+                outputArea.setText("=== Query result ===" + System.lineSeparator() + line);
+            } else {
+                outputArea.appendText(System.lineSeparator() + System.lineSeparator() + "=== Query result ===" + System.lineSeparator() + line);
+            }
+        } catch (Exception e) {
+            outputArea.appendText(System.lineSeparator() + "Query error: " + e.getMessage());
+        } finally {
+            askButton.setDisable(false);
+        }
     }
 
     private static void runExample(

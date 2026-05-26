@@ -3,6 +3,7 @@ package mytweetyapp;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 
 /**
@@ -65,27 +66,50 @@ public class HospitalSemanticNet {
         return false;
     }
 
-    public static void main(String[] args) {
-        System.out.println("=== TP 4: Réseaux Sémantiques (Hospital Management) ===");
-        
+    public static HospitalSemanticNet buildNetwork() {
         HospitalSemanticNet semanticNet = new HospitalSemanticNet();
 
-        // 1. Create Nodes (Concepts / Entities)
         Node professional = semanticNet.getOrCreateNode("Healthcare_Professional");
         Node doctor = semanticNet.getOrCreateNode("Doctor");
         Node surgeon = semanticNet.getOrCreateNode("Surgeon");
         Node hospital = semanticNet.getOrCreateNode("Hospital");
         Node drHouse = semanticNet.getOrCreateNode("Dr_House");
 
-        // 2. Build the Semantic Links (Relations & Taxonomy)
-        // Hierarchy
         surgeon.addRelation("is-a", doctor);
         doctor.addRelation("is-a", professional);
         drHouse.addRelation("is-a", surgeon);
-
-        // Properties
         professional.addRelation("works-in", hospital);
         surgeon.addRelation("performs", semanticNet.getOrCreateNode("Surgery"));
+        return semanticNet;
+    }
+
+    public boolean ask(String subjectName, String relation, String objectName) {
+        Node start = resolveNode(subjectName);
+        Node target = resolveNode(objectName);
+        if (start == null || target == null) {
+            return false;
+        }
+        String rel = relation == null ? "" : relation.trim().toLowerCase(Locale.ROOT);
+        if ("a".equals(rel)) {
+            rel = "is-a";
+        }
+        return checkHeritage(start, rel, target);
+    }
+
+    Node resolveNode(String name) {
+        return SemanticNetLookup.resolve(network, name);
+    }
+
+    List<String> knownNodes() {
+        return List.copyOf(network.keySet());
+    }
+
+    public static void main(String[] args) {
+        System.out.println("=== TP 4: Réseaux Sémantiques (Hospital Management) ===");
+
+        HospitalSemanticNet semanticNet = buildNetwork();
+        Node hospital = semanticNet.getOrCreateNode("Hospital");
+        Node drHouse = semanticNet.getOrCreateNode("Dr_House");
 
         System.out.println("Réseau Sémantique Hospitalier construit avec succès.");
 

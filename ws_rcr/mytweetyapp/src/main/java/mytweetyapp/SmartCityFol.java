@@ -16,11 +16,12 @@ import org.tweetyproject.logics.fol.syntax.FolFormula;
 import org.tweetyproject.logics.fol.syntax.FolSignature;
 
 public class SmartCityFol {
-    public static void main(String[] args) throws ParserException, IOException {
-        System.out.println("=== TP 1: First-Order Logic (Smart City Public Transport) ===");
-        
-        // 1. Define the Signature (Vocabulary of our domain)
-        FolSignature sig = new FolSignature(true); 
+
+    public record SmartCityContext(FolParser parser, FolBeliefSet kb, FolReasoner reasoner) {
+    }
+
+    public static SmartCityContext buildContext() throws ParserException, IOException {
+        FolSignature sig = new FolSignature(true);
         
         // Sorts (Types of objects)
         Sort sortVehicle = new Sort("Vehicle");
@@ -66,12 +67,20 @@ public class SmartCityFol {
         // Rules (If station X is connected to Y, then Y is connected to X by symmetry)
         kb.add((FolFormula)parser.parseFormula("forall X:(forall Y:(Connected(X,Y) => Connected(Y,X)))"));
         
-        System.out.println("Knowledge Base successfully constructed!");
-        
-        // 3. Reasoning / Exploitation
         FolReasoner.setDefaultReasoner(new SimpleFolReasoner());
         FolReasoner prover = FolReasoner.getDefaultReasoner();
-        
+        return new SmartCityContext(parser, kb, prover);
+    }
+
+    public static void main(String[] args) throws ParserException, IOException {
+        System.out.println("=== TP 1: First-Order Logic (Smart City Public Transport) ===");
+
+        SmartCityContext ctx = buildContext();
+        FolParser parser = ctx.parser();
+        FolBeliefSet kb = ctx.kb();
+        FolReasoner prover = ctx.reasoner();
+
+        System.out.println("Knowledge Base successfully constructed!");
         System.out.println("\n--- Queries & Exploitation ---");
         
         // Query 1: Simple fact checking

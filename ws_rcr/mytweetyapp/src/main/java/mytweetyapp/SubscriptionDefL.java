@@ -11,51 +11,31 @@ import org.tweetyproject.logics.rdl.syntax.DefaultTheory;
 import java.io.IOException;
 
 public class SubscriptionDefL {
-    public static void main(String[] args) throws ParserException, IOException {
-        System.out.println("=== TP 3: Logique des Défauts (Subscription Auto-Renewal) ===");
 
-        // Setup the underlying First Order Logic Reasoner for Default Logic
+    public static DefaultTheory buildTheory(RdlParser parser) throws ParserException, IOException {
         FolReasoner.setDefaultReasoner(new SimpleFolReasoner());
 
-        /* 
-         * Real-world scenario: Auto-renewing software subscriptions.
-         * 
-         * RULES:
-         * 1. If someone is a Subscriber, by DEFAULT they will AutoRenew, 
-         *    UNLESS we know their Card is Expired.
-         * 
-         * SCENARIO:
-         * - Alice is a Subscriber. 
-         * - Bob is a Subscriber.
-         * - Bob's Card is Expired.
-         */
-
-        String kbString = 
+        String kbString =
                 "Person = {alice, bob} \n" +
                 "type(Subscriber(Person)) \n" +
                 "type(AutoRenew(Person)) \n" +
                 "type(CardExpired(Person)) \n" +
-                
-                // Facts
-                "Subscriber(alice) \n" + 
+                "Subscriber(alice) \n" +
                 "Subscriber(bob) \n" +
                 "CardExpired(bob) \n" +
+                "!AutoRenew(bob) \n" +
+                "Subscriber(X) :: AutoRenew(X) / AutoRenew(X)";
 
-                // Default Rule: Subscriber(X) : AutoRenew(X) / AutoRenew(X)
-                // Meaning: If X is a Subscriber, and it is consistent to assume they will AutoRenew 
-                //          (i.e., we don't have proof they can't, like a card expiry rule), then they AutoRenew.
-                // We add a strict FOL rule: CardExpired(X) => !AutoRenew(X)
-                // (In this RDL parser, strict rules can be added as regular FOL formulas)
-                "!AutoRenew(bob) \n" + // Strict consequence of card expiry for bob
-                
-                "Subscriber(X) :: AutoRenew(X) / AutoRenew(X)"; 
+        return parser.parseBeliefBase(kbString);
+    }
 
-        // 1. Build the Default Theory
+    public static void main(String[] args) throws ParserException, IOException {
+        System.out.println("=== TP 3: Logique des Défauts (Subscription Auto-Renewal) ===");
+
         RdlParser parser = new RdlParser();
-        DefaultTheory theory = parser.parseBeliefBase(kbString);
+        DefaultTheory theory = buildTheory(parser);
         System.out.println("Base de Connaissances (Théorie des Défauts) chargée.");
-        
-        // 2. Exploit the Knowledge Base
+
         SimpleDefaultReasoner reasoner = new SimpleDefaultReasoner();
 
         System.out.println("\n--- Exécution & Preuves ---");
@@ -73,5 +53,8 @@ public class SubscriptionDefL {
         FolFormula bobNotRenew = (FolFormula) parser.parseFormula("!AutoRenew(bob)");
         System.out.println("Q3: A-t-on prouvé que Bob NE DOIT PAS auto-renouveler ? -> " + 
                             reasoner.query(theory, bobNotRenew));
+
+        System.out.println("\n--- Questions interactives (GUI) ---");
+        System.out.println("Dans TpRunnerFx: Is alice autorenew? | Is bob card-expired?");
     }
 }

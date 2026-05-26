@@ -3,6 +3,7 @@ package mytweetyapp;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 
 /**
@@ -61,9 +62,7 @@ public class BirdExceptionSemanticNet {
         return false;
     }
 
-    public static void main(String[] args) {
-        System.out.println("=== TP 4: Réseau sémantique avec exceptions (Oiseaux) ===");
-
+    public static BirdExceptionSemanticNet buildNetwork() {
         BirdExceptionSemanticNet net = new BirdExceptionSemanticNet();
 
         Node locomotion = net.node("Locomotion");
@@ -72,16 +71,63 @@ public class BirdExceptionSemanticNet {
         Node moineaux = net.node("Moineaux");
         Node autruche = net.node("Autruche");
 
-        // Relation générale (typique): les oiseaux volent.
         oiseaux.addRelation("locomotion", voler);
         voler.addRelation("is-a", locomotion);
-
-        // Taxonomie.
         moineaux.addRelation("is-a", oiseaux);
         autruche.addRelation("is-a", oiseaux);
-
-        // Exception explicite: autruche ne vole pas (blocage de l'heritage).
         autruche.addRelation("exception", voler);
+        return net;
+    }
+
+    public boolean ask(String subjectName, String relation, String objectName) {
+        Node start = resolveNode(subjectName);
+        if (start == null) {
+            return false;
+        }
+        String rel = normalizeRelation(relation);
+        String objName = objectName == null ? "" : objectName.trim();
+        if (objName.isBlank() && ("voler".equals(rel) || "vole".equals(rel) || "fly".equals(rel) || "locomotion".equals(rel))) {
+            objName = "Voler";
+            rel = "locomotion";
+        }
+        if ("voler".equals(rel) || "vole".equals(rel) || "fly".equals(rel)) {
+            rel = "locomotion";
+            if (objName.isBlank()) {
+                objName = "Voler";
+            }
+        }
+        if ("a".equals(rel)) {
+            rel = "is-a";
+        }
+        Node target = resolveNode(objName);
+        if (target == null) {
+            return false;
+        }
+        return inherited(start, rel, target);
+    }
+
+    Node resolveNode(String name) {
+        return SemanticNetLookup.resolve(graph, name);
+    }
+
+    List<String> knownNodes() {
+        return List.copyOf(graph.keySet());
+    }
+
+    private static String normalizeRelation(String raw) {
+        if (raw == null) {
+            return "";
+        }
+        return raw.trim().toLowerCase(Locale.ROOT).replace(' ', '-');
+    }
+
+    public static void main(String[] args) {
+        System.out.println("=== TP 4: Réseau sémantique avec exceptions (Oiseaux) ===");
+
+        BirdExceptionSemanticNet net = buildNetwork();
+        Node voler = net.node("Voler");
+        Node moineaux = net.node("Moineaux");
+        Node autruche = net.node("Autruche");
 
         boolean moineauVole = net.inherited(moineaux, "locomotion", voler);
         boolean autrucheHeriteVol = net.inherited(autruche, "locomotion", voler);

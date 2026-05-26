@@ -3,6 +3,7 @@ package mytweetyapp;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 
 /**
@@ -54,9 +55,7 @@ public class UniversitySemanticNet {
         return false;
     }
 
-    public static void main(String[] args) {
-        System.out.println("=== TP 4: Réseaux Sémantiques (University Management) ===");
-
+    public static UniversitySemanticNet buildNetwork() {
         UniversitySemanticNet semanticNet = new UniversitySemanticNet();
 
         Node person = semanticNet.getOrCreateNode("Person");
@@ -71,6 +70,37 @@ public class UniversitySemanticNet {
         drSmith.addRelation("is-a", aiProfessor);
         person.addRelation("works-in", university);
         aiProfessor.addRelation("teaches", machineLearning);
+        return semanticNet;
+    }
+
+    public boolean ask(String subjectName, String relation, String objectName) {
+        Node start = resolveNode(subjectName);
+        Node target = resolveNode(objectName);
+        if (start == null || target == null) {
+            return false;
+        }
+        String rel = relation == null ? "" : relation.trim().toLowerCase(Locale.ROOT);
+        if ("a".equals(rel)) {
+            rel = "is-a";
+        }
+        return checkHeritage(start, rel, target);
+    }
+
+    Node resolveNode(String name) {
+        return SemanticNetLookup.resolve(network, name);
+    }
+
+    List<String> knownNodes() {
+        return List.copyOf(network.keySet());
+    }
+
+    public static void main(String[] args) {
+        System.out.println("=== TP 4: Réseaux Sémantiques (University Management) ===");
+
+        UniversitySemanticNet semanticNet = buildNetwork();
+        Node university = semanticNet.getOrCreateNode("University");
+        Node drSmith = semanticNet.getOrCreateNode("Dr_Smith");
+        Node machineLearning = semanticNet.getOrCreateNode("Machine_Learning");
 
         System.out.println("Réseau Sémantique Universitaire construit avec succès.");
         System.out.println("\n--- Exploitation & Héritage de Propriétés ---");
